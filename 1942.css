@@ -73,7 +73,7 @@ body{
     font-size:30px;
     font-family: gamingFont;
 }
-#explosion{
+.explosion{
     background: url('1942.gif');
     background-position: -52px -390px;
     width:18px;

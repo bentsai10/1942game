@@ -8,11 +8,12 @@ var hero = {
 var enemies = []
 
 var bullets = [];
+
 function generateEnemies(){
     if(enemies.length <8){
         var enemyType = Math.floor((Math.random() * 5)) + 1;
         var randomX = (Math.floor((Math.random() * 15)) + 5)*50;
-        enemies.push({type: enemyType, x: randomX, y: 0});
+        enemies.push({type: enemyType, x: randomX, y: 0, exploded: false});
     }
 }
 function displayHero(){
@@ -22,7 +23,12 @@ function displayHero(){
 function displayEnemies(){
     var output = "";
     for(var i = 0; i < enemies.length; i++){
-        output+='<div class="enemy' + enemies[i].type + '" style="top:' + enemies[i].y + 'px; left:' + enemies[i].x + 'px;"></div>'
+        if(enemies[i].exploded == false){
+            output+='<div class="enemy' + enemies[i].type + '" style="top:' + enemies[i].y + 'px; left:' + enemies[i].x + 'px;"></div>'
+        }else{
+            output+='<div class="explosion" style="top:' + enemies[i].y + 'px; left:' + enemies[i].x + 'px;"></div>';
+        }
+        
     }
     document.getElementById('enemies').innerHTML = output;
 }
@@ -59,26 +65,43 @@ function moveBullets(){
     }
 }
 function detectBulletCollision(){
+    var audio = new Audio('Explosion.mp3');
     for(var i = 0; i <bullets.length; i++){
         for(var j = 0; j <enemies.length; j++){
             if(Math.abs(bullets[i].x - enemies[j].x) < 20 && Math.abs(bullets[i].y - enemies[j].y) < 10){
                 score +=100;
+                bullets.splice(i, 1);
+                enemies[j].exploded = true;
+                displayEnemies();
+                enemies.splice(j, 1);
+                audio.play();
             }
             else if(enemies[j].type == 4 && Math.abs(bullets[i].x - enemies[j].x) < 50 && Math.abs(bullets[i].y - enemies[j].y) < 20){
                 score +=300;
+                bullets.splice(i, 1);
+                enemies[j].exploded = true;
+                displayEnemies();
+                enemies.splice(j, 1);
+                audio.play();
             }
         }
     }
 }
 function detectPlaneCollision(){
+    var audio = new Audio('Explosion.mp3');
     for(var i = 0; i <enemies.length; i++){
         if((Math.abs(hero.x - enemies[i].x) < 20 && Math.abs(hero.y - enemies[i].y) < 20)){
             score-=500;
-            console.log("collision with plane!");
-    
+            enemies[i].exploded = true;
+            displayEnemies();
+            enemies.splice(i, 1);
+            audio.play();
         }else if(enemies[i].type == 4 && Math.abs(hero.x - enemies[i].x) < 50 && Math.abs(hero.y - enemies[i].y) < 40){
             score-=500;
-            console.log("Big collision with plane!");
+            enemies[i].exploded = true;
+            displayEnemies();
+            enemies.splice(i, 1);
+            audio.play();
         }
     }
 }
