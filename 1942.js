@@ -1,3 +1,5 @@
+var score = 0;
+
 var hero = {
     x: 700,
     y:500, 
@@ -9,9 +11,8 @@ var bullets = [];
 function generateEnemies(){
     if(enemies.length <8){
         var enemyType = Math.floor((Math.random() * 5)) + 1;
-        var randomX = (Math.floor((Math.random() * 17)) + 5)*50;
+        var randomX = (Math.floor((Math.random() * 15)) + 5)*50;
         enemies.push({type: enemyType, x: randomX, y: 0});
-        console.log(enemies);
     }
 }
 function displayHero(){
@@ -32,15 +33,16 @@ function displayBullets(){
     }
     document.getElementById('bullets').innerHTML = output;
 }
+function displayScore(){
+    document.getElementById('score').innerHTML = score;
+}
 function moveEnemies(){
     for(var i = 0; i < enemies.length; i++){
         if(enemies[i].y + 2 > 527){
-            enemies[i] = enemies[enemies.length-1];
-            enemies.pop();
+            enemies.shift();
         }
         else if(enemies[i].type ==4 && enemies[i].y + 2 > 508){
-            enemies[i] = enemies[enemies.length-1];
-            enemies.pop();
+            enemies.shift();
         }
         else{
             enemies[i].y +=2;
@@ -49,12 +51,35 @@ function moveEnemies(){
 }
 function moveBullets(){
     for(var i = 0; i < bullets.length; i++){
-        if(bullets[i].y - 5 < 0){
-            bullets[0] = bullets[bullets.length-1];
-            bullets.pop();
+        if(bullets[i].y - 5 < 5){
+            bullets.shift();
         }else{
             bullets[i].y -=5;
         }   
+    }
+}
+function detectBulletCollision(){
+    for(var i = 0; i <bullets.length; i++){
+        for(var j = 0; j <enemies.length; j++){
+            if(Math.abs(bullets[i].x - enemies[j].x) < 20 && Math.abs(bullets[i].y - enemies[j].y) < 10){
+                score +=100;
+            }
+            else if(enemies[j].type == 4 && Math.abs(bullets[i].x - enemies[j].x) < 50 && Math.abs(bullets[i].y - enemies[j].y) < 20){
+                score +=300;
+            }
+        }
+    }
+}
+function detectPlaneCollision(){
+    for(var i = 0; i <enemies.length; i++){
+        if((Math.abs(hero.x - enemies[i].x) < 20 && Math.abs(hero.y - enemies[i].y) < 20)){
+            score-=500;
+            console.log("collision with plane!");
+    
+        }else if(enemies[i].type == 4 && Math.abs(hero.x - enemies[i].x) < 50 && Math.abs(hero.y - enemies[i].y) < 40){
+            score-=500;
+            console.log("Big collision with plane!");
+        }
     }
 }
 document.onkeydown = function (e) {
@@ -75,13 +100,16 @@ document.onkeydown = function (e) {
 }
 
 function gameLoop(){
+    detectBulletCollision();
+    detectPlaneCollision();
     displayHero();
     displayEnemies();
     moveEnemies();
     moveBullets();
     displayBullets();
+    displayScore();
 }
 
 setInterval(gameLoop, 50);
-setInterval(generateEnemies, 1000);
+setInterval(generateEnemies, 2000);
 

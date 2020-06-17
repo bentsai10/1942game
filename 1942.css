@@ -66,10 +66,17 @@ body{
     position:absolute;
     border: 5px solid black;
     top:20px;
-    left:1120px;
+    left:1000px;
     background-color:white;
     color: goldenrod;
     padding:10px;
     font-size:30px;
     font-family: gamingFont;
+}
+#explosion{
+    background: url('1942.gif');
+    background-position: -52px -390px;
+    width:18px;
+    height:28px;
+    position:absolute;
 }
